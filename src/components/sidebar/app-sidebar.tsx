@@ -164,7 +164,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   }
 
   return (
-    <Sidebar className="border-r border-sidebar-border/50 bg-sidebar/80 backdrop-blur-md" {...props}>
+    <Sidebar className="border-r border-sidebar-border/40 bg-sidebar/95 backdrop-blur-xl" {...props}>
       <SidebarHeader>
         <Link href="/">
           <Image

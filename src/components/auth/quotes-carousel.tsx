@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// import { motion, AnimatePresence } from "framer-motion"; // Removed as not installed
-// I will use standard CSS transitions.
 
 const quotes = [
     {
@@ -10,20 +8,32 @@ const quotes = [
         author: "Steve Jobs",
     },
     {
-        text: "Innovation distinguishes between a leader and a follower.",
-        author: "Steve Jobs",
+        text: "The best way to predict the future is to invent it.",
+        author: "Alan Kay",
     },
     {
-        text: "Stay hungry, stay foolish.",
-        author: "Steve Jobs",
+        text: "Simplicity is the ultimate sophistication.",
+        author: "Leonardo da Vinci",
     },
     {
-        text: "Your time is limited, so don't waste it living someone else's life.",
-        author: "Steve Jobs",
+        text: "First, solve the problem. Then, write the code.",
+        author: "John Johnson",
     },
     {
-        text: "Design is not just what it looks like and feels like. Design is how it works.",
-        author: "Steve Jobs",
+        text: "Any sufficiently advanced technology is indistinguishable from magic.",
+        author: "Arthur C. Clarke",
+    },
+    {
+        text: "The function of good software is to make the complex appear simple.",
+        author: "Grady Booch",
+    },
+    {
+        text: "Talk is cheap. Show me the code.",
+        author: "Linus Torvalds",
+    },
+    {
+        text: "Make it work, make it right, make it fast.",
+        author: "Kent Beck",
     },
 ];
 
@@ -33,49 +43,57 @@ export function QuotesCarousel() {
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrent((prev) => (prev + 1) % quotes.length);
-        }, 4000);
+        }, 5000);
 
         return () => clearInterval(timer);
     }, []);
 
     return (
-        <div className="relative h-full w-full flex flex-col justify-between p-12 text-white bg-zinc-900">
-            {/* Logo removed */}
+        <div className="relative h-full w-full flex flex-col justify-end p-12 lg:p-16 text-white bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950 overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
 
-            <div className="z-10 max-w-lg relative min-h-[200px]">
+            {/* Grid pattern */}
+            <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+
+            {/* Content */}
+            <div className="z-10 max-w-xl relative min-h-[180px] mb-8">
                 {quotes.map((quote, index) => (
                     <div
                         key={index}
-                        className={`absolute top-0 left-0 transition-all duration-700 ease-in-out transform ${index === current
+                        className={`absolute bottom-0 left-0 transition-all duration-700 ease-out transform ${index === current
                             ? "opacity-100 translate-y-0"
-                            : "opacity-0 translate-y-8"
+                            : "opacity-0 translate-y-6"
                             }`}
                     >
-                        <blockquote className="text-2xl font-medium leading-relaxed">
-                            "{quote.text}"
+                        <blockquote className="text-xl lg:text-2xl font-medium leading-relaxed text-white/90 tracking-tight">
+                            &ldquo;{quote.text}&rdquo;
                         </blockquote>
-                        <footer className="mt-4 text-sm font-medium text-white/60">
-                            — {quote.author}
+                        <footer className="mt-5 text-sm font-medium text-blue-300/60">
+                            {quote.author}
                         </footer>
                     </div>
                 ))}
             </div>
 
+            {/* Progress indicators */}
             <div className="z-10 flex gap-2">
                 {quotes.map((_, index) => (
-                    <div
+                    <button
                         key={index}
-                        className={`h-1 rounded-full transition-all duration-500 ${index === current ? "w-8 bg-white" : "w-2 bg-white/20"
-                            }`}
+                        onClick={() => setCurrent(index)}
+                        className={`h-1 rounded-full transition-all duration-500 ${index === current
+                            ? "w-10 bg-blue-400"
+                            : "w-2 bg-white/20 hover:bg-white/30"
+                        }`}
                     />
                 ))}
             </div>
 
-            {/* Background Pattern */}
-            <div className="absolute inset-0 z-0 opacity-20">
-                <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white" />
-                </svg>
+            {/* Subtle corner accent */}
+            <div className="absolute top-8 left-8">
+                <div className="w-12 h-12 border border-blue-400/20 rounded-xl" />
             </div>
         </div>
     );

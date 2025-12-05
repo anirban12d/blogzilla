@@ -47,12 +47,12 @@ export function SearchCommand() {
         <>
             <Button
                 variant="outline"
-                className="relative h-9 w-9 p-0 md:w-40 md:justify-start md:px-3 lg:w-64"
+                className="relative h-9 w-9 p-0 md:h-10 md:w-44 md:justify-start md:px-4 lg:w-64 text-muted-foreground hover:text-foreground"
                 onClick={() => setOpen(true)}
             >
                 <SearchIcon className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline-flex">Search posts...</span>
-                <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.3rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 md:flex">
+                <span className="hidden md:inline-flex text-sm">Search...</span>
+                <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 hidden h-6 select-none items-center gap-1 rounded-md border bg-muted px-2 font-mono text-[10px] font-medium opacity-100 md:flex">
                     <span className="text-xs">⌘</span>K
                 </kbd>
             </Button>

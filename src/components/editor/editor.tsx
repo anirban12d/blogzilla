@@ -86,25 +86,29 @@ const Editor = () => {
 
   return (
     <div className="relative w-full max-w-screen-lg">
-      <div className="flex absolute right-5 top-5 z-10 mb-5 gap-2">
-        <div className="rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground">
+      {/* Floating Status Bar */}
+      <div className="flex absolute right-4 top-4 z-10 gap-2">
+        <div className={`
+          px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300
+          ${saveStatus === "Saved"
+            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+            : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 animate-pulse"
+          }
+        `}>
           {saveStatus}
         </div>
-        <div
-          className={
-            charsCount
-              ? "rounded-lg bg-accent px-2 py-1 text-sm text-muted-foreground"
-              : "hidden"
-          }
-        >
-          {charsCount} Words
-        </div>
+        {charsCount !== undefined && charsCount > 0 && (
+          <div className="px-3 py-1.5 rounded-full text-xs font-medium bg-muted/50 text-muted-foreground border border-border/50">
+            {charsCount} words
+          </div>
+        )}
       </div>
+
       <EditorRoot>
         <EditorContent
           initialContent={initialContent}
           extensions={extensions}
-          className="relative min-h-[500px] w-full max-w-screen-lg border-muted bg-background sm:mb-[calc(20vh)] sm:rounded-lg sm:border sm:shadow-lg"
+          className="relative min-h-[500px] w-full max-w-screen-lg bg-background sm:mb-[calc(20vh)] rounded-xl border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300"
           editorProps={{
             handleDOMEvents: {
               keydown: (_view, event) => handleCommandNavigation(event),
@@ -124,24 +128,24 @@ const Editor = () => {
           }}
           slotAfter={<ImageResizer />}
         >
-          <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-md border border-muted bg-background px-1 py-2 shadow-md transition-all">
-            <EditorCommandEmpty className="px-2 text-muted-foreground">
-              No results
+          <EditorCommand className="z-50 h-auto max-h-[330px] overflow-y-auto rounded-xl border border-border/50 bg-background/95 backdrop-blur-sm px-2 py-2 shadow-lg transition-all">
+            <EditorCommandEmpty className="px-3 py-2 text-sm text-muted-foreground">
+              No results found
             </EditorCommandEmpty>
             <EditorCommandList>
               {suggestionItems.map((item) => (
                 <EditorCommandItem
                   value={item.title}
                   onCommand={(val) => item.command?.(val)}
-                  className="flex w-full items-center space-x-2 rounded-md px-2 py-1 text-left text-sm hover:bg-accent aria-selected:bg-accent"
+                  className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm hover:bg-accent/50 aria-selected:bg-accent transition-colors cursor-pointer"
                   key={item.title}
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md border border-muted bg-background">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border/50 bg-muted/50 text-primary">
                     {item.icon}
                   </div>
-                  <div>
-                    <p className="font-medium">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground">{item.title}</p>
+                    <p className="text-xs text-muted-foreground truncate">
                       {item.description}
                     </p>
                   </div>

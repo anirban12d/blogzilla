@@ -1,16 +1,15 @@
 "use client";
 
-
 import { useTRPC } from "@/trpc/trpc-provider";
 import { EditorReader } from "./reader";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import { authClient } from "@/lib/auth/auth-client";
 import { ScrollArea } from "../ui/scroll-area";
 import { ArrowLeft, Calendar, Clock, Edit2, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 export function PostViewer(props: { slug: string }) {
   const trpc = useTRPC();
@@ -43,93 +42,104 @@ export function PostViewer(props: { slug: string }) {
 
   return (
     <ScrollArea className="h-screen w-full">
-      <div className="min-h-screen bg-background pb-20">
-        <div className="container mx-auto max-w-4xl px-6 py-12 md:py-16 space-y-8">
+      <article className="min-h-screen bg-background">
+        {/* Hero Section */}
+        {data.heroImage && (
+          <div className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh] overflow-hidden">
+            <Image
+              src={data.heroImage}
+              alt={`Hero image for ${data.title}`}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+          </div>
+        )}
+
+        <div className={`container mx-auto max-w-2xl lg:max-w-3xl px-4 sm:px-6 lg:px-8 ${data.heroImage ? '-mt-24 md:-mt-32 relative z-10' : 'pt-8 md:pt-12 lg:pt-16'}`}>
           {/* Navigation */}
-          <Button asChild variant="ghost" size="sm" className="-ml-3 text-muted-foreground hover:text-foreground">
+          <Button asChild variant="ghost" size="sm" className={`mb-6 md:mb-8 -ml-2 ${data.heroImage ? 'text-white/90 hover:text-white hover:bg-white/10' : 'text-muted-foreground hover:text-foreground'}`}>
             <Link href="/" className="gap-2">
               <ArrowLeft className="size-4" />
-              Back to Blog
+              Back
             </Link>
           </Button>
 
           {/* Header Content */}
-          <div className="space-y-6">
+          <header className="space-y-4 md:space-y-6">
             {(data as any).categories && (data as any).categories.length > 0 && (
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {(data as any).categories.map((c: any) => (
-                  <Badge key={c.id} variant="secondary" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border-none">
+                  <Badge key={c.id} variant="secondary" className="rounded-md px-3 py-1 text-xs font-medium">
                     {c.name}
                   </Badge>
                 ))}
               </div>
             )}
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-foreground leading-[1.2]">
               {data.title}
             </h1>
 
             {data.description && (
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl leading-relaxed">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground leading-relaxed">
                 {data.description}
               </p>
             )}
 
-            <div className="flex flex-wrap items-center gap-6 text-sm md:text-base text-muted-foreground pt-2">
-              <div className="flex items-center gap-2">
-                <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="size-4 text-primary" />
+            <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm text-muted-foreground pt-4 pb-6 border-b border-border/50">
+              <div className="flex items-center gap-2.5">
+                <div className="size-8 md:size-9 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User className="size-3.5 md:size-4 text-primary" />
                 </div>
                 <span className="font-medium text-foreground">{data.authorName || "Author"}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="size-4" />
+
+              <span className="hidden sm:inline text-border">·</span>
+
+              <div className="flex items-center gap-1.5">
+                <Calendar className="size-3.5 md:size-4" />
                 <span>{formattedDate}</span>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock className="size-4" />
+
+              <span className="hidden sm:inline text-border">·</span>
+
+              <div className="flex items-center gap-1.5">
+                <Clock className="size-3.5 md:size-4" />
                 <span>5 min read</span>
               </div>
 
               {canEdit && (
-                <Button asChild variant="outline" size="sm" className="ml-auto gap-2">
+                <Button asChild variant="outline" size="sm" className="gap-2 ml-auto">
                   <Link href={`/dashboard/published/${data.id}`}>
                     <Edit2 className="size-3" />
-                    Edit Post
+                    Edit
                   </Link>
                 </Button>
               )}
             </div>
-          </div>
-
-          {/* Hero Image */}
-          {data.heroImage && (
-            <div className="relative w-full aspect-video rounded-3xl overflow-hidden border bg-muted shadow-sm">
-              <img
-                src={data.heroImage}
-                alt={data.title}
-                className="absolute inset-0 w-full h-full object-cover"
-              />
-            </div>
-          )}
+          </header>
 
           {/* Content Section */}
-          <div className="pt-8">
+          <div className="py-8 md:py-10 lg:py-12">
             <EditorReader content={data.content as any} />
+          </div>
 
-            <Separator className="my-12" />
-
-            <div className="flex justify-between items-center">
-              <Button asChild variant="ghost" className="gap-2">
+          {/* Footer */}
+          <footer className="border-t border-border/50 py-8 md:py-12 mb-8">
+            <div className="flex justify-center">
+              <Button asChild variant="outline" className="gap-2">
                 <Link href="/">
                   <ArrowLeft className="size-4" />
                   Back to all posts
                 </Link>
               </Button>
             </div>
-          </div>
+          </footer>
         </div>
-      </div>
+      </article>
     </ScrollArea>
   );
 }

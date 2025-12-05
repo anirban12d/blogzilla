@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Clock } from "lucide-react";
 import type { Post } from "@/types";
 
 type PostCardProps = {
   post: Post & {
     categories?: { id: number; name: string; slug: string }[];
-    description?: string | null; // short description
+    description?: string | null;
     authorName?: string | null;
   };
 };
@@ -20,77 +20,69 @@ export function PostCard({ post }: PostCardProps) {
   ).toLocaleDateString(undefined, {
     year: "numeric",
     month: "short",
-    day: "2-digit",
+    day: "numeric",
   });
 
-  const colorClasses = [
-    "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 border-transparent",
-    "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-transparent",
-    "bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 border-transparent",
-    "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-transparent",
-    "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 border-transparent",
-    "bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300 border-transparent",
-    "bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 border-transparent",
-  ];
-
-  const colorFor = (seed: string, idx: number) => {
-    let hash = 0;
-    for (let i = 0; i < seed.length; i++)
-      hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-    const index = (hash + idx) % colorClasses.length;
-    return colorClasses[index];
-  };
-
   return (
-    <Card className="group overflow-hidden rounded-2xl pt-0 border bg-card transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <Card className="group overflow-hidden rounded-xl pt-0 border border-border/50 bg-card transition-all duration-300 hover:shadow-lg hover:border-border">
       {post.heroImage ? (
-        <Link href={`/blog/${post.slug}`}>
+        <Link href={`/blog/${post.slug}`} className="block overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.heroImage}
             alt={post.title}
-            className="h-40 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         </Link>
-      ) : null}
-      <CardContent className="p-4 space-y-3">
-        <div className="text-xs font-medium text-primary/80">
-          <span className="text-primary">
-            {post.authorName ? post.authorName : "Author"}
-          </span>
-          <span className="mx-1">•</span>
-          <span>{createdAt}</span>
-        </div>
+      ) : (
         <Link href={`/blog/${post.slug}`} className="block">
-          <div className="flex items-start gap-2">
-            <h3 className="line-clamp-2 text-lg font-semibold tracking-tight">
-              {post.title}
-            </h3>
-            <ArrowUpRight className="mt-1 size-4 shrink-0 text-primary opacity-0 transition-opacity group-hover:opacity-100" />
+          <div className="h-44 w-full bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+              <span className="text-xl font-bold text-primary/60">{post.title.charAt(0)}</span>
+            </div>
           </div>
         </Link>
-        {post.description ? (
-          <p className="line-clamp-2 text-sm text-muted-foreground">
+      )}
+      <CardContent className="p-5 space-y-3">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span className="font-medium text-foreground/80">
+            {post.authorName ? post.authorName : "Author"}
+          </span>
+          <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+          <span>{createdAt}</span>
+          {post.readingTime && (
+            <>
+              <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {post.readingTime} min
+              </span>
+            </>
+          )}
+        </div>
+        <Link href={`/blog/${post.slug}`} className="block group/title">
+          <h3 className="line-clamp-2 text-lg font-semibold tracking-tight leading-snug group-hover/title:text-primary transition-colors">
+            {post.title}
+          </h3>
+        </Link>
+        {post.description && (
+          <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed">
             {post.description}
           </p>
-        ) : post.readingTime ? (
-          <div className="text-xs text-muted-foreground">
-            {post.readingTime} min read
-          </div>
-        ) : null}
-        {post.categories && post.categories.length > 0 ? (
-          <div className="flex flex-wrap gap-2 pt-1">
-            {post.categories.slice(0, 2).map((c, i) => (
+        )}
+        {post.categories && post.categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {post.categories.slice(0, 2).map((c) => (
               <Badge
                 key={c.id}
                 variant="secondary"
-                className={`rounded-full px-2 py-0.5 text-xs ${colorFor(c.slug ?? c.name, i)}`}
+                className="rounded-md px-2.5 py-0.5 text-xs font-medium bg-secondary hover:bg-secondary/80 text-secondary-foreground border-none"
               >
                 {c.name}
               </Badge>
             ))}
           </div>
-        ) : null}
+        )}
       </CardContent>
     </Card>
   );
@@ -98,15 +90,21 @@ export function PostCard({ post }: PostCardProps) {
 
 export function PostCardSkeleton() {
   return (
-    <Card className="overflow-hidden">
-      <div className="h-48 w-full bg-muted" />
-      <CardContent className="p-4 space-y-3">
-        <div className="h-3 w-24 bg-muted rounded" />
-        <div className="h-5 w-3/4 bg-muted rounded" />
-        <div className="h-5 w-2/3 bg-muted rounded" />
-        <div className="flex gap-2 pt-1">
-          <div className="h-5 w-16 bg-muted rounded" />
-          <div className="h-5 w-16 bg-muted rounded" />
+    <Card className="overflow-hidden rounded-xl border border-border/50">
+      <div className="h-44 w-full bg-muted animate-pulse" />
+      <CardContent className="p-5 space-y-3">
+        <div className="flex gap-2">
+          <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+          <div className="h-3 w-20 bg-muted rounded animate-pulse" />
+        </div>
+        <div className="space-y-2">
+          <div className="h-5 w-full bg-muted rounded animate-pulse" />
+          <div className="h-5 w-3/4 bg-muted rounded animate-pulse" />
+        </div>
+        <div className="h-4 w-full bg-muted rounded animate-pulse" />
+        <div className="flex gap-2 pt-2">
+          <div className="h-6 w-16 bg-muted rounded-md animate-pulse" />
+          <div className="h-6 w-20 bg-muted rounded-md animate-pulse" />
         </div>
       </CardContent>
     </Card>
